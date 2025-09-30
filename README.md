@@ -1,113 +1,127 @@
-# 📌 Task API Webhook
+# Task API Webhook 🚀
 
-API REST en **Node.js + Express + MongoDB** con soporte para **Webhooks**, lista para correr en **Docker**.  
-Incluye colección de Postman para testear y script de seeding automático de tareas.
-
----
-
-## 🚀 Features
-- CRUD completo de tareas.
-- Registro y notificación a Webhooks externos.
-- Seeding inicial con **50 tareas realistas en inglés** (solo si la colección está vacía).
-- Endpoint para borrar todas las tareas.
-- Configuración lista para **Docker Compose** o **Docker Hub**.
-- Postman collection + environment listos para testing.
-- Soporte para **Newman** (tests automatizados desde la terminal).
+REST API built with **Node.js**, **Express** and **MongoDB**, with support for webhooks, metrics (Prometheus / AppDynamics simulation) and ticketing (ITSM simulation). Ready to run with Docker or locally.  
 
 ---
 
-## 🔧 Requisitos
+## 🔍 Table of Contents
 
-Antes de comenzar, asegurate de tener instalado:
-
-- [Node.js](https://nodejs.org/) (si querés correrlo sin Docker)  
-- [Docker](https://www.docker.com/)  
-- [Docker Compose](https://docs.docker.com/compose/)  
-- [Postman](https://www.postman.com/downloads/) o [Newman](https://www.npmjs.com/package/newman) para testing  
+1. [Features](#features)  
+2. [Requirements](#requirements)  
+3. [Installation & Running](#installation--running)  
+   - Docker Hub  
+   - Docker Compose  
+   - Local (Node.js)  
+4. [Endpoints](#endpoints)  
+   - Tasks  
+   - Webhook  
+   - Metrics  
+   - ITSM / Tickets  
+5. [Postman / Testing](#postman--testing)  
+6. [License & Author](#license--author)  
 
 ---
 
-## ▶️ Cómo correr la aplicación
+## 🛠 Features
 
-### 1. Usando la imagen en Docker Hub (más rápido)
+- CRUD for tasks  
+- Webhook registration (notify external URLs)  
+- Initial seeding of 50 tasks (only first run)  
+- Endpoints for metrics:  
+  - `/metrics/prometheus` → output compatible with Prometheus (plain text)  
+  - `/metrics/appdynamics` → JSON simulation of AppDynamics data  
+- ITSM / Ticketing simulation: `/itsm/ticket` and `/itsm/tickets`  
+- Docker & Docker Compose setup  
+- Postman collection + environment provided for ease of testing  
+- Support for automated tests with Newman  
+
+---
+
+## 📋 Requirements
+
+- Node.js (version 18 or above recommended)  
+- npm  
+- Docker & Docker Compose (for containerized mode)  
+- Postman / Newman (for API testing)  
+
+---
+
+## ▶ Installation & Running
+
+### 1. Using Docker Hub (quick start)
 
 ```bash
-docker pull tuusuario/task-api-webhook:latest
-docker run -p 3000:3000 tuusuario/task-api-webhook
-La API estará disponible en:
-👉 http://localhost:3000
+docker pull ra1984/test-api-webhook:latest
+docker run -p 3000:3000 ra1984/test-api-webhook
+Visit: http://localhost:3000
 
-2. Usando Docker Compose (modo desarrollo)
+2. Using Docker Compose (development)
 bash
 Copy code
 docker-compose up --build
-Esto levanta:
+This will start two containers:
 
-task-api → API Node.js en puerto 3000
+task-api on port 3000
 
-mongo-db → MongoDB en puerto 27017
+mongo-db on port 27017
 
-3. Usando Node.js (sin Docker)
+3. Local (Node.js mode)
 bash
 Copy code
 npm install
 npm start
-📡 Endpoints principales
-Método	Endpoint	Descripción
-GET	/tasks	Listar todas las tareas
-POST	/tasks	Crear una nueva tarea
-PUT	/tasks/:id	Editar una tarea existente
-DELETE	/tasks/:id	Eliminar una tarea
-DELETE	/tasks	Eliminar todas las tareas
-POST	/webhook	Registrar un webhook externo
+📬 Endpoints
+Tasks
+Method	URL	Description
+GET	/tasks	List all tasks
+GET	/tasks/:id	Get a task by ID
+POST	/tasks	Create a new task
+PUT	/tasks/:id	Update a task
+DELETE	/tasks/:id	Delete a task
+DELETE	/tasks	Delete all tasks
 
-Ejemplo de registro de webhook:
+Webhook
+Method	URL	Description
+POST	/webhook	Register a webhook URL
+
+Body:
 
 json
 Copy code
-POST /webhook
+{ "url": "https://your-webhook.site/id" }
+Metrics
+Method	URL	Description
+GET	/metrics/prometheus	Metrics in Prometheus text format
+GET	/metrics/appdynamics	JSON-like simulation of APM metrics
+
+ITSM / Tickets (simulation)
+Method	URL	Description
+POST	/itsm/ticket	Create a new ticket
+GET	/itsm/tickets	List all tickets
+
+POST Body Example:
+
+json
+Copy code
 {
-  "url": "https://webhook.site/xxxxx"
+  "title": "Database latency alert",
+  "description": "High latency noticed in Mongo calls",
+  "priority": "High"
 }
-🧪 Testing con Postman y Newman
-Importar en Postman
-Importá postman_environment.json
+🧪 Postman / Testing
+Import collection JSON (Task-API-Webhook Collection)
 
-Importá postman_collection.json
+Import environment JSON (Task API Webhooks - Local)
 
-Ejecutar tests con Newman
-bash
-Copy code
-newman run postman_collection.json -e postman_environment.json
-📦 Imagen Docker en Docker Hub
-La imagen oficial está disponible en:
+Use variables: {{baseUrl}}, {{taskId}}, {{ticketId}}
+
+After creating a task or ticket, store its ID into taskId or ticketId for subsequent requests
+
+You can run automated tests using Newman:
 
 bash
 Copy code
-docker pull ra1984/task-api-webhook:latest
-docker run -p 3000:3000 ra1984/task-api-webhook
-
-📄 Documentación extra
-En el repo encontrarás también un PDF paso a paso con:
-
-Instalación de dependencias.
-
-Comandos npm necesarios.
-
-Montaje con Docker y Docker Compose.
-
-Ejecución de tests con Newman.
-
-🛠 Stack Tecnológico
-Node.js + Express
-
-MongoDB (con Mongoose ODM)
-
-Docker & Docker Compose
-
-Postman / Newman
-
-Webhooks
-
-👨‍💻 Autor
-Proyecto desarrollado por Ramiro Funes
+newman run Task-API-Webhook.postman_collection.json -e Task-API-Webhooks.postman_environment.json
+🧾 License & Author
+Licensed under the MIT License.
+Developed by Ramiro Funes
