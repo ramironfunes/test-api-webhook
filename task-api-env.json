@@ -1,6 +1,6 @@
 {
-  "id": "task-api-env-001",
-  "name": "Task API Env",
+  "id": "2c6a1b8e-1234-5678-9abc-taskapi-env999",
+  "name": "Task API Webhooks - Local",
   "values": [
     {
       "key": "baseUrl",
@@ -11,9 +11,14 @@
       "key": "taskId",
       "value": "",
       "enabled": true
+    },
+    {
+      "key": "ticketId",
+      "value": "",
+      "enabled": true
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2025-09-30T00:00:00.000Z",
-  "_postman_exported_using": "Postman/10.20.0"
+  "_postman_exported_at": "2025-09-30T03:40:00.000Z",
+  "_postman_exported_using": "Postman/10.21.9"
 }

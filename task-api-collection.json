@@ -1,13 +1,13 @@
 {
   "info": {
-    "name": "Task API Collection",
-    "_postman_id": "12345678-abcd-4321-efgh-987654321000",
-    "description": "Colección de endpoints para probar la Task API con CRUD completo y borrado masivo.",
+    "name": "Task API Webhook Collection",
+    "_postman_id": "f2d3e2b8-1234-5678-9012-abcdef123456",
+    "description": "Postman collection for testing Task API with Webhooks, Metrics (Prometheus & AppDynamics) and ITSM tickets.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Get all tasks",
+      "name": "List tasks",
       "request": {
         "method": "GET",
         "header": [],
@@ -19,7 +19,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": ["{{baseUrl}}"], "path": ["tasks", ":id"] }
+        "url": { "raw": "{{baseUrl}}/tasks/1", "host": ["{{baseUrl}}"], "path": ["tasks", "1"] }
       }
     },
     {
@@ -29,7 +29,7 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Finish API docs\",\n  \"description\": \"Complete the Postman collection export\",\n  \"completed\": false\n}"
+          "raw": "{\n  \"title\": \"Fix bug in API\",\n  \"description\": \"Resolve Mongo connection issue\",\n  \"status\": \"pending\"\n}"
         },
         "url": { "raw": "{{baseUrl}}/tasks", "host": ["{{baseUrl}}"], "path": ["tasks"] }
       }
@@ -41,9 +41,9 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Updated task title\",\n  \"description\": \"Updated task description\",\n  \"completed\": true\n}"
+          "raw": "{\n  \"title\": \"Fix API Mongo bug\",\n  \"description\": \"Connection retry logic\",\n  \"status\": \"completed\"\n}"
         },
-        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": ["{{baseUrl}}"], "path": ["tasks", ":id"] }
+        "url": { "raw": "{{baseUrl}}/tasks/1", "host": ["{{baseUrl}}"], "path": ["tasks", "1"] }
       }
     },
     {
@@ -51,16 +51,67 @@
       "request": {
         "method": "DELETE",
         "header": [],
-        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": ["{{baseUrl}}"], "path": ["tasks", ":id"] }
+        "url": { "raw": "{{baseUrl}}/tasks/1", "host": ["{{baseUrl}}"], "path": ["tasks", "1"] }
       }
     },
     {
-      "name": "🚨 Delete ALL tasks",
+      "name": "Delete all tasks",
       "request": {
         "method": "DELETE",
         "header": [],
         "url": { "raw": "{{baseUrl}}/tasks", "host": ["{{baseUrl}}"], "path": ["tasks"] }
       }
+    },
+    {
+      "name": "Register Webhook",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"http://localhost:4000/webhook\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/webhook", "host": ["{{baseUrl}}"], "path": ["webhook"] }
+      }
+    },
+    {
+      "name": "Prometheus Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/metrics/prometheus", "host": ["{{baseUrl}}"], "path": ["metrics", "prometheus"] }
+      }
+    },
+    {
+      "name": "AppDynamics Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/metrics/appdynamics", "host": ["{{baseUrl}}"], "path": ["metrics", "appdynamics"] }
+      }
+    },
+    {
+      "name": "ITSM - Create Ticket",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"MongoDB connection failure\",\n  \"description\": \"Our Dockerized Task API lost connection to Mongo\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/itsm/ticket", "host": ["{{baseUrl}}"], "path": ["itsm", "ticket"] }
+      }
+    },
+    {
+      "name": "ITSM - List Tickets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/itsm/tickets", "host": ["{{baseUrl}}"], "path": ["itsm", "tickets"] }
+      }
     }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" }
   ]
 }

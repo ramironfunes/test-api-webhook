@@ -6,6 +6,9 @@ import bodyParser from "body-parser";
 import fetch from "node-fetch";
 import taskRoutes from "./routes/tasks.js";
 import Task from "./models/Task.js";
+import axios from "axios";
+import ticketRoutes from "./routes/tickets.js";
+
 
 dotenv.config();
 const app = express();
@@ -13,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use("/itsm/tickets", ticketRoutes);
 
 let webhookUrl = null;
 
@@ -106,3 +110,84 @@ mongoose
     );
   })
   .catch((err) => console.error("❌ Error de conexión:", err));
+
+// Endpoint para crear ticket en ITSM
+app.post("/itsm/ticket", async (req, res) => {
+  const { summary, description, priority } = req.body;
+
+  try {
+    // Ejemplo con JIRA Service Management
+    const response = await axios.post(
+      "https://TU_DOMINIO.atlassian.net/rest/api/3/issue",
+      {
+        fields: {
+          project: { key: "IT" }, // Cambia el proyecto según tu instancia
+          summary: summary || "Task API issue detected",
+          description: description || "Generated automatically from Task API",
+          issuetype: { name: "Bug" },
+          priority: { name: priority || "Medium" },
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${Buffer.from(
+            "TU_USUARIO:TU_API_TOKEN"
+          ).toString("base64")}`,
+        },
+      }
+    );
+
+    res.json({
+      message: "✅ Ticket created successfully in ITSM",
+      ticket: response.data,
+    });
+  } catch (error) {
+    console.error("❌ Error creating ITSM ticket:", error.response?.data || error.message);
+    res.status(500).json({
+      message: "Error creating ITSM ticket",
+      error: error.response?.data || error.message,
+    });
+  }
+});
+
+
+
+  // =======================
+// Integraciones externas
+// =======================
+
+// Prometheus (simulación)
+app.get("/metrics/prometheus", (req, res) => {
+  res.type("text/plain").send(`# HELP task_count Number of tasks
+# TYPE task_count gauge
+task_count ${Math.floor(Math.random() * 100)}
+`);
+});
+
+// AppDynamics (simulación)
+app.get("/metrics/appdynamics", (req, res) => {
+  res.json({
+    app: "task-api-webhook",
+    health: "green",
+    responseTimeMs: Math.floor(Math.random() * 500),
+    errors: Math.floor(Math.random() * 5),
+    timestamp: new Date(),
+  });
+});
+
+// ITSM - Jira/ServiceNow (simulación)
+app.post("/itsm/ticket", (req, res) => {
+  const { title, description, priority } = req.body;
+  if (!title || !description) {
+    return res.status(400).json({ message: "Title and description are required" });
+  }
+  res.json({
+    message: "Ticket created (simulated)",
+    id: `TICKET-${Math.floor(Math.random() * 10000)}`,
+    title,
+    description,
+    priority: priority || "Medium",
+    status: "Open",
+  });
+});
