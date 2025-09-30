@@ -1,0 +1,37 @@
+services:
+  api:
+    build: .
+    container_name: task-api
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/taskdb
+      - JWT_SECRET=supersecret
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo-db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  newman:
+    image: postman/newman:alpine
+    container_name: task-api-tests
+    depends_on:
+      - api
+    volumes:
+      - ./postman:/etc/newman
+    command: >
+      run /etc/newman/task-api-collection.json
+      -e /etc/newman/task-api-env.json
+      --delay-request 500
+      --timeout 20000
+      --reporters cli,htmlextra
+
+volumes:
+  mongo-data:
